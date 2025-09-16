@@ -631,30 +631,35 @@
 
     <script>
         // Function to calculate and send height to parent window (for iframe integration)
+        let heightUpdateTimeout = null;
+        let lastCalculatedHeight = 0;
+
         function updateIframeHeight() {
-            const body = document.body;
-            const html = document.documentElement;
-
-            // Get the maximum height including all content
-            const height = Math.max(
-                body.scrollHeight,
-                body.offsetHeight,
-                html.clientHeight,
-                html.scrollHeight,
-                html.offsetHeight
-            );
-
-            // Send height to parent window for iframe resizing
-            if (window.parent && window.parent !== window) {
-                // Store the last sent height to prevent feedback loops
-                if (window.lastSentHeight !== height) {
-                    window.lastSentHeight = height;
-                    window.parent.postMessage({
-                        type: 'iframe-height',
-                        height: height
-                    }, '*');
-                }
+            // Clear any pending height updates
+            if (heightUpdateTimeout) {
+                clearTimeout(heightUpdateTimeout);
             }
+
+            // Debounce height updates
+            heightUpdateTimeout = setTimeout(() => {
+                if (window.parent && window.parent !== window) {
+                    // Use a simple, reliable height calculation
+                    const height = Math.max(
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight
+                    );
+
+                    // Only send if height changed by more than 5px to prevent micro-adjustments
+                    if (Math.abs(height - lastCalculatedHeight) > 5) {
+                        lastCalculatedHeight = height;
+                        window.parent.postMessage({
+                            type: 'iframe-height',
+                            height: height,
+                            timestamp: Date.now() // Add timestamp to help debug
+                        }, '*');
+                    }
+                }
+            }, 100); // 100ms debounce
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -662,8 +667,8 @@
             const sections = document.querySelectorAll('.actor-section');
             const detailsElements = document.querySelectorAll('details');
 
-            // Initial height calculation
-            setTimeout(updateIframeHeight, 100);
+            // Initial height calculation - wait for content to fully load
+            setTimeout(updateIframeHeight, 500);
 
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
@@ -681,23 +686,23 @@
                         targetSection.classList.add('active');
                     }
 
-                    // Update iframe height after content change
-                    setTimeout(updateIframeHeight, 50);
+                    // Update iframe height after content change - longer delay for animations
+                    setTimeout(updateIframeHeight, 300);
                 });
             });
 
             // Listen for details/summary expansions
             detailsElements.forEach(details => {
                 details.addEventListener('toggle', function() {
-                    // Small delay to allow content to expand/collapse
-                    setTimeout(updateIframeHeight, 100);
+                    // Longer delay to allow content to expand/collapse fully
+                    setTimeout(updateIframeHeight, 300);
                 });
             });
 
-            // Listen for window resize events
-            window.addEventListener('resize', function() {
-                setTimeout(updateIframeHeight, 100);
-            });
+            // Remove window resize listener to prevent conflicts
+            // window.addEventListener('resize', function() {
+            //     setTimeout(updateIframeHeight, 100);
+            // });
         });
     </script>
 </body>
