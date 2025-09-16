@@ -114,41 +114,70 @@
         }
     }
 
+    // Keep track of last set height to prevent feedback loops
+    let lastSetHeight = 0;
+    let isResizing = false;
+
     // Listen for height messages from iframe
     window.addEventListener('message', function(e) {
         debugLog('Message received:', e.data);
 
         // Check for the updated message type from your iframe
-        if (e.data && e.data.type === 'iframe-height') {
+        if (e.data && e.data.type === 'iframe-height' && !isResizing) {
             const iframe = document.getElementById('expertIframe');
             if (iframe) {
-                const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
-                const adjustedHeight = Math.ceil(e.data.height / scaleFactor);
+                const newHeight = e.data.height;
 
-                debugLog('Scale factor:', scaleFactor);
-                debugLog('Original height:', e.data.height);
-                debugLog('Adjusted height:', adjustedHeight);
-                debugLog('Current iframe height:', iframe.style.height);
+                // Prevent feedback loop - only update if height changed significantly
+                if (Math.abs(newHeight - lastSetHeight) > 10) {
+                    isResizing = true;
 
-                // Add some padding to prevent scrollbars
-                const finalHeight = adjustedHeight + 20;
-                iframe.style.height = finalHeight + 'px';
+                    const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
+                    const adjustedHeight = Math.ceil(newHeight / scaleFactor);
 
-                debugLog('Final iframe height:', iframe.style.height);
+                    debugLog('Scale factor:', scaleFactor);
+                    debugLog('Original height:', newHeight);
+                    debugLog('Adjusted height:', adjustedHeight);
+                    debugLog('Current iframe height:', iframe.style.height);
+                    debugLog('Last set height:', lastSetHeight);
+
+                    // Add some padding to prevent scrollbars
+                    const finalHeight = adjustedHeight + 20;
+                    iframe.style.height = finalHeight + 'px';
+                    lastSetHeight = newHeight;
+
+                    debugLog('Final iframe height:', iframe.style.height);
+
+                    // Reset resizing flag after a short delay
+                    setTimeout(() => {
+                        isResizing = false;
+                    }, 200);
+                } else {
+                    debugLog('Height change too small, ignoring to prevent feedback loop');
+                }
             } else {
                 debugLog('ERROR: iframe not found');
             }
         }
 
         // Also support the old message type for backward compatibility
-        if (e.data && e.data.type === 'resize-iframe') {
+        if (e.data && e.data.type === 'resize-iframe' && !isResizing) {
             const iframe = document.getElementById('expertIframe');
             if (iframe) {
-                const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
-                const adjustedHeight = Math.ceil(e.data.height / scaleFactor);
-                const finalHeight = adjustedHeight + 20;
-                iframe.style.height = finalHeight + 'px';
-                debugLog('Fallback resize - Final iframe height:', iframe.style.height);
+                const newHeight = e.data.height;
+                if (Math.abs(newHeight - lastSetHeight) > 10) {
+                    isResizing = true;
+                    const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
+                    const adjustedHeight = Math.ceil(newHeight / scaleFactor);
+                    const finalHeight = adjustedHeight + 20;
+                    iframe.style.height = finalHeight + 'px';
+                    lastSetHeight = newHeight;
+                    debugLog('Fallback resize - Final iframe height:', iframe.style.height);
+
+                    setTimeout(() => {
+                        isResizing = false;
+                    }, 200);
+                }
             }
         }
     });

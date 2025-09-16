@@ -646,10 +646,14 @@
 
             // Send height to parent window for iframe resizing
             if (window.parent && window.parent !== window) {
-                window.parent.postMessage({
-                    type: 'iframe-height',
-                    height: height
-                }, '*');
+                // Store the last sent height to prevent feedback loops
+                if (window.lastSentHeight !== height) {
+                    window.lastSentHeight = height;
+                    window.parent.postMessage({
+                        type: 'iframe-height',
+                        height: height
+                    }, '*');
+                }
             }
         }
 
@@ -694,9 +698,6 @@
             window.addEventListener('resize', function() {
                 setTimeout(updateIframeHeight, 100);
             });
-
-            // Periodic height check in case of dynamic content changes
-            setInterval(updateIframeHeight, 1000);
         });
     </script>
 </body>
