@@ -18,6 +18,9 @@
             color: #2c3e50;
             background: #f5f5f5;
             font-size: 18px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
         
         .exemplar-banner {
@@ -42,6 +45,8 @@
             display: flex;
             max-width: 1800px;
             margin: 0 auto;
+            min-height: 100vh;
+            width: 100%;
         }
         
         .sidebar {
@@ -645,27 +650,73 @@
     </div>
 
     <script>
+        // Function to calculate and send height to parent window (for iframe integration)
+        function updateIframeHeight() {
+            const body = document.body;
+            const html = document.documentElement;
+
+            // Get the maximum height including all content
+            const height = Math.max(
+                body.scrollHeight,
+                body.offsetHeight,
+                html.clientHeight,
+                html.scrollHeight,
+                html.offsetHeight
+            );
+
+            // Send height to parent window for iframe resizing
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'iframe-height',
+                    height: height
+                }, '*');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const navItems = document.querySelectorAll('.nav-item');
             const sections = document.querySelectorAll('.actor-section');
-            
+            const detailsElements = document.querySelectorAll('details');
+
+            // Initial height calculation
+            setTimeout(updateIframeHeight, 100);
+
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
                     // Remove active class from all nav items and sections
                     navItems.forEach(nav => nav.classList.remove('active'));
                     sections.forEach(section => section.classList.remove('active'));
-                    
+
                     // Add active class to clicked item
                     this.classList.add('active');
-                    
+
                     // Show corresponding section
                     const actorId = this.getAttribute('data-actor');
                     const targetSection = document.getElementById(actorId);
                     if (targetSection) {
                         targetSection.classList.add('active');
                     }
+
+                    // Update iframe height after content change
+                    setTimeout(updateIframeHeight, 50);
                 });
             });
+
+            // Listen for details/summary expansions
+            detailsElements.forEach(details => {
+                details.addEventListener('toggle', function() {
+                    // Small delay to allow content to expand/collapse
+                    setTimeout(updateIframeHeight, 100);
+                });
+            });
+
+            // Listen for window resize events
+            window.addEventListener('resize', function() {
+                setTimeout(updateIframeHeight, 100);
+            });
+
+            // Periodic height check in case of dynamic content changes
+            setInterval(updateIframeHeight, 1000);
         });
     </script>
 </body>

@@ -1,0 +1,186 @@
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+    .expert-toggle-link {
+        color: #a32035;
+        font-family: 'Figtree', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px 15px;
+        background: #fce8eb;
+        border: 2px solid #a32035;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .expert-toggle-link:hover {
+        background: #a32035;
+        color: white;
+        text-decoration: none;
+    }
+
+    .expert-toggle-link::before {
+        content: "▼ ";
+        display: inline-block;
+        transition: transform 0.3s ease;
+        margin-right: 8px;
+        font-size: 14px;
+    }
+
+    .expert-toggle-link.collapsed::before {
+        transform: rotate(-90deg);
+    }
+
+    .expert-iframe-container {
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.5s ease;
+        margin-bottom: 20px;
+    }
+
+    .expert-iframe-container.active {
+        height: auto;
+        overflow: visible;
+    }
+
+    .expert-iframe-container iframe {
+        width: 100%;
+        height: 600px; /* Initial height */
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        transition: height 0.3s ease;
+    }
+
+    /* Adjusted for narrower display */
+    .expert-iframe-container iframe {
+        min-width: 950px !important;
+        transform-origin: top left;
+        transform: scale(0.95);
+        width: 105.26% !important;
+    }
+
+    @media (max-width: 768px) {
+        .expert-iframe-container iframe {
+            transform: scale(0.75);
+            width: 133.33% !important;
+            height: 650px;
+        }
+    }
+</style>
+<a href="javascript:void(0);" class="expert-toggle-link collapsed" onclick="toggleExpertVis(event)">Click to see experts' qualitative justifications for their assessments</a>
+<div class="expert-iframe-container" id="expertVisContainer">
+    <iframe
+        id="expertIframe"
+        src="https://jessgrahamuq.github.io/qualitative-exemplar/"
+        title="Expert Qualitative Feedback Visualization"
+        scrolling="no">
+    </iframe>
+</div>
+<script>
+    // Debug flag
+    const DEBUG_IFRAME = true;
+
+    function debugLog(message, data) {
+        if (DEBUG_IFRAME) {
+            console.log(`[IFRAME DEBUG] ${message}`, data || '');
+        }
+    }
+
+    function toggleExpertVis(e) {
+        e.preventDefault();
+        debugLog('Toggle clicked');
+        const link = document.querySelector('.expert-toggle-link');
+        const container = document.getElementById('expertVisContainer');
+
+        link.classList.toggle('collapsed');
+        container.classList.toggle('active');
+
+        debugLog('Container active:', container.classList.contains('active'));
+
+        // Trigger height update when container becomes visible
+        if (container.classList.contains('active')) {
+            setTimeout(() => {
+                const iframe = document.getElementById('expertIframe');
+                if (iframe && iframe.contentWindow) {
+                    // Request height update from iframe
+                    iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
+                }
+            }, 100);
+        }
+    }
+
+    // Listen for height messages from iframe
+    window.addEventListener('message', function(e) {
+        debugLog('Message received:', e.data);
+
+        // Check for the updated message type from your iframe
+        if (e.data && e.data.type === 'iframe-height') {
+            const iframe = document.getElementById('expertIframe');
+            if (iframe) {
+                const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
+                const adjustedHeight = Math.ceil(e.data.height / scaleFactor);
+
+                debugLog('Scale factor:', scaleFactor);
+                debugLog('Original height:', e.data.height);
+                debugLog('Adjusted height:', adjustedHeight);
+                debugLog('Current iframe height:', iframe.style.height);
+
+                // Add some padding to prevent scrollbars
+                const finalHeight = adjustedHeight + 20;
+                iframe.style.height = finalHeight + 'px';
+
+                debugLog('Final iframe height:', iframe.style.height);
+            } else {
+                debugLog('ERROR: iframe not found');
+            }
+        }
+
+        // Also support the old message type for backward compatibility
+        if (e.data && e.data.type === 'resize-iframe') {
+            const iframe = document.getElementById('expertIframe');
+            if (iframe) {
+                const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
+                const adjustedHeight = Math.ceil(e.data.height / scaleFactor);
+                const finalHeight = adjustedHeight + 20;
+                iframe.style.height = finalHeight + 'px';
+                debugLog('Fallback resize - Final iframe height:', iframe.style.height);
+            }
+        }
+    });
+
+    // Set up iframe load listener
+    document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.getElementById('expertIframe');
+        if (iframe) {
+            iframe.addEventListener('load', function() {
+                debugLog('Iframe loaded');
+
+                // Request initial height after iframe loads
+                setTimeout(() => {
+                    if (iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
+                    }
+                }, 500);
+            });
+        }
+    });
+
+    // Handle window resize to recalculate scale factors
+    window.addEventListener('resize', function() {
+        debugLog('Window resized, requesting height update');
+        const iframe = document.getElementById('expertIframe');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
+        }
+    });
+
+    // Log initial setup
+    debugLog('Debug script loaded');
+    debugLog('Looking for iframe with ID:', 'expertIframe');
+    debugLog('Iframe found:', !!document.getElementById('expertIframe'));
+</script>
