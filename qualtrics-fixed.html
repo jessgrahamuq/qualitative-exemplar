@@ -1,0 +1,14 @@
+<!-- Ultra-minimal for Qualtrics -->
+<style>
+.expert-btn{color:#a32035;font:700 18px Figtree,sans-serif;padding:10px 15px;background:#fce8eb;border:2px solid #a32035;border-radius:6px;text-decoration:none;display:inline-block;margin-bottom:20px;cursor:pointer}
+.expert-btn:hover{background:#a32035;color:white}
+.viz-box{max-height:0;overflow:hidden;transition:max-height 0.5s ease}
+.viz-box.open{max-height:900px}
+</style>
+
+<a href="#" class="expert-btn" onclick="this.nextElementSibling.classList.toggle('open')">View Expert Assessments</a>
+<div class="viz-box">
+    <iframe src="https://jessgrahamuq.github.io/qualitative-exemplar/"
+            style="width:100%;height:850px;border:1px solid #ddd;border-radius:6px">
+    </iframe>
+</div>

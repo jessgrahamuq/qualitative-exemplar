@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+.expert-toggle {
+    color: #a32035;
+    font-family: 'Figtree', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: #fce8eb;
+    border: 2px solid #a32035;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.expert-toggle:hover {
+    background: #a32035;
+    color: white;
+    text-decoration: none;
+}
+
+.viz-hidden {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.viz-visible {
+    max-height: 1000px;
+    overflow: visible;
+    transition: max-height 0.5s ease;
+}

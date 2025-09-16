@@ -1,0 +1,26 @@
+<!-- Qualtrics HTML (minimal) -->
+<link rel="stylesheet" href="https://jessgrahamuq.github.io/qualitative-exemplar/qualtrics-styles.css">
+<a href="#" class="expert-toggle" onclick="toggleViz()">View Expert Assessments</a>
+<div id="viz-container" class="viz-hidden">
+    <iframe src="https://jessgrahamuq.github.io/qualitative-exemplar/"
+            id="viz-frame"
+            style="width:100%;border:1px solid #ddd;border-radius:6px;height:600px;"></iframe>
+</div>
+
+<script>
+let isOpen = false;
+function toggleViz() {
+    const container = document.getElementById('viz-container');
+    const frame = document.getElementById('viz-frame');
+
+    if (!isOpen) {
+        container.className = 'viz-visible';
+        // Set fixed heights based on typical content
+        frame.style.height = '800px'; // Adjust as needed
+        isOpen = true;
+    } else {
+        container.className = 'viz-hidden';
+        isOpen = false;
+    }
+}
+</script>
