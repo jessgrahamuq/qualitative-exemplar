@@ -50,7 +50,7 @@
 
     .expert-iframe-container iframe {
         width: 100%;
-        height: 600px; /* Initial height */
+        height: 800px; /* Increased default height */
         border: 1px solid #e0e0e0;
         border-radius: 6px;
         transition: height 0.3s ease;
@@ -78,233 +78,17 @@
         id="expertIframe"
         src="https://jessgrahamuq.github.io/qualitative-exemplar/"
         title="Expert Qualitative Feedback Visualization"
-        scrolling="no">
+        scrolling="yes">
     </iframe>
 </div>
 <script>
-    // Debug flag - enhanced debugging
-    const DEBUG_IFRAME = true;
-    let debugCounter = 0;
-
-    // Create visible debug panel for Qualtrics
-    function createDebugPanel() {
-        const panel = document.createElement('div');
-        panel.id = 'debug-panel';
-        panel.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 300px;
-            max-height: 400px;
-            background: #000;
-            color: #0f0;
-            font-family: monospace;
-            font-size: 12px;
-            padding: 10px;
-            border: 2px solid #0f0;
-            z-index: 10000;
-            overflow-y: auto;
-            border-radius: 5px;
-        `;
-        panel.innerHTML = '<div style="color: #ff0; font-weight: bold;">🐛 IFRAME DEBUG PANEL</div><div id="debug-content"></div>';
-        document.body.appendChild(panel);
-        return panel;
-    }
-
-    function debugLog(message, data) {
-        if (DEBUG_IFRAME) {
-            debugCounter++;
-            const logMessage = `[#${debugCounter}] ${message}`;
-            console.log(logMessage, data || '');
-
-            // Also show in visible debug panel
-            const debugContent = document.getElementById('debug-content');
-            if (debugContent) {
-                const logDiv = document.createElement('div');
-                logDiv.innerHTML = `${logMessage} ${data ? JSON.stringify(data) : ''}`;
-                debugContent.appendChild(logDiv);
-                debugContent.scrollTop = debugContent.scrollHeight;
-            }
-        }
-    }
-
-    function logAllDimensions() {
-        const iframe = document.getElementById('expertIframe');
-        if (iframe) {
-            const container = document.getElementById('expertVisContainer');
-            const rect = iframe.getBoundingClientRect();
-
-            console.group(`🔍 DIMENSION ANALYSIS #${debugCounter}`);
-            console.log('📐 Iframe Dimensions:', {
-                'style.height': iframe.style.height,
-                'offsetHeight': iframe.offsetHeight,
-                'clientHeight': iframe.clientHeight,
-                'scrollHeight': iframe.scrollHeight,
-                'boundingRect.height': rect.height
-            });
-            console.log('📦 Container:', {
-                'className': container.className,
-                'offsetHeight': container.offsetHeight,
-                'scrollHeight': container.scrollHeight
-            });
-            console.log('🌍 Window:', {
-                'innerWidth': window.innerWidth,
-                'innerHeight': window.innerHeight,
-                'devicePixelRatio': window.devicePixelRatio
-            });
-            console.log('🎚️ Scale Factor:', window.innerWidth <= 768 ? 0.75 : 0.95);
-            console.groupEnd();
-        }
-    }
-
     function toggleExpertVis(e) {
         e.preventDefault();
-        debugLog('🎯 Toggle clicked');
-        logAllDimensions();
 
         const link = document.querySelector('.expert-toggle-link');
         const container = document.getElementById('expertVisContainer');
 
         link.classList.toggle('collapsed');
         container.classList.toggle('active');
-
-        debugLog('📱 Container active:', container.classList.contains('active'));
-
-        // Log dimensions after toggle
-        setTimeout(() => {
-            logAllDimensions();
-        }, 100);
-
-        // Trigger height update when container becomes visible
-        if (container.classList.contains('active')) {
-            setTimeout(() => {
-                const iframe = document.getElementById('expertIframe');
-                if (iframe && iframe.contentWindow) {
-                    debugLog('📤 Requesting height from iframe');
-                    iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
-                }
-            }, 200);
-        }
     }
-
-    // Keep track of last set height and prevent rapid updates
-    let lastSetHeight = 0;
-    let lastUpdateTime = 0;
-    const UPDATE_THROTTLE = 200; // Minimum time between updates in ms
-
-    // Listen for height messages from iframe
-    window.addEventListener('message', function(e) {
-        debugLog('Message received:', e.data);
-
-        // Check for the updated message type from your iframe
-        if (e.data && e.data.type === 'iframe-height') {
-            const now = Date.now();
-            const timeSinceLastUpdate = now - lastUpdateTime;
-
-            console.group(`📨 HEIGHT MESSAGE RECEIVED #${debugCounter}`);
-            debugLog('⏱️ Time since last update:', timeSinceLastUpdate + 'ms');
-            debugLog('📊 Message data:', e.data);
-            debugLog('🔄 Current iframe height before change:', document.getElementById('expertIframe')?.style.height);
-
-            // Log dimensions before processing
-            logAllDimensions();
-
-            // Throttle updates to prevent feedback loops
-            if (timeSinceLastUpdate < UPDATE_THROTTLE) {
-                debugLog('⏸️ Update throttled - too soon since last update');
-                console.groupEnd();
-                return;
-            }
-
-            const iframe = document.getElementById('expertIframe');
-            if (iframe) {
-                const newHeight = e.data.height;
-                const heightDifference = Math.abs(newHeight - lastSetHeight);
-
-                debugLog('📏 Height Analysis:', {
-                    'newHeight': newHeight,
-                    'lastSetHeight': lastSetHeight,
-                    'difference': heightDifference,
-                    'threshold': 10
-                });
-
-                // Only update if height changed significantly (more than 10px)
-                if (heightDifference > 10) {
-                    const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
-                    const adjustedHeight = Math.ceil(newHeight / scaleFactor);
-                    const finalHeight = adjustedHeight + 30;
-
-                    debugLog('🔢 Calculations:', {
-                        'scaleFactor': scaleFactor,
-                        'adjustedHeight': adjustedHeight,
-                        'padding': 30,
-                        'finalHeight': finalHeight
-                    });
-
-                    iframe.style.height = finalHeight + 'px';
-                    lastSetHeight = newHeight;
-                    lastUpdateTime = now;
-
-                    debugLog('✅ Height updated to:', iframe.style.height);
-
-                    // Log dimensions after change
-                    setTimeout(() => {
-                        logAllDimensions();
-                    }, 50);
-                } else {
-                    debugLog('⚠️ Height change too small, ignoring:', heightDifference + 'px');
-                }
-            } else {
-                debugLog('❌ ERROR: iframe not found');
-            }
-            console.groupEnd();
-        }
-    });
-
-    // Set up iframe load listener
-    document.addEventListener('DOMContentLoaded', function() {
-        const iframe = document.getElementById('expertIframe');
-        if (iframe) {
-            iframe.addEventListener('load', function() {
-                debugLog('Iframe loaded');
-
-                // Request initial height after iframe loads
-                setTimeout(() => {
-                    if (iframe.contentWindow) {
-                        iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
-                    }
-                }, 500);
-            });
-        }
-    });
-
-    // Handle window resize to recalculate scale factors
-    window.addEventListener('resize', function() {
-        debugLog('Window resized, requesting height update');
-        const iframe = document.getElementById('expertIframe');
-        if (iframe && iframe.contentWindow) {
-            iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
-        }
-    });
-
-    // Log initial setup
-    debugLog('🚀 Debug script loaded');
-    debugLog('🔍 Looking for iframe with ID:', 'expertIframe');
-    debugLog('✅ Iframe found:', !!document.getElementById('expertIframe'));
-
-    // Auto-debug every 5 seconds to track what's happening
-    setInterval(() => {
-        if (document.getElementById('expertVisContainer')?.classList.contains('active')) {
-            console.log('🔄 AUTO-DEBUG: Container is active, logging dimensions...');
-            logAllDimensions();
-        }
-    }, 5000);
-
-    // Log when user interacts with anything
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('#expertVisContainer')) {
-            debugLog('👆 User clicked inside iframe container');
-            setTimeout(logAllDimensions, 100);
-        }
-    });
 </script>
