@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Responsibility Themes - Exposure to Toxic Content (AI-Generated Exemplar)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Figtree', sans-serif;
+            line-height: 1.5;
+            color: #2c3e50;
+            background: #f5f5f5;
+            font-size: 18px;
+        }
+        
+        .exemplar-banner {
+            background: #dc2626;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .exemplar-banner::before {
+            content: "⚠️ ";
+            margin-right: 6px;
+        }
+        
+        .main-container {
+            display: flex;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 10px;
+            position: sticky;
+            top: 48px;
+            height: fit-content;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px 30px;
+            background: white;
+            min-width: 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 8px;
+        }
+        
+        .nav-section-title {
+            background: #a32035;
+            color: white;
+            font-weight: 600;
+            font-size: 17px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin: 2px 0 2px 0;
+        }
+        
+        .nav-section-title.optional {
+            background: #898A8D;
+        }
+        
+        .nav-item {
+            padding: 5px 10px;
+            margin-bottom: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 17px;
+            color: #333;
+        }
+        
+        .nav-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .nav-item.active {
+            background: #fce8eb;
+            color: #a32035;
+            font-weight: 500;
+        }
+        
+        .actor-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .actor-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .responsibility-split {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            align-items: flex-start;
+        }
+        
+        .responsibility-column {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .responsibility-category {
+            background: white;
+            border: none;
+            border-radius: 0;
+            padding: 10px;
+            height: 100%;
+        }
+        
+        .high-resp {
+            border-left: none;
+        }
+        
+        .high-resp h3 {
+            color: #27ae60;
+        }
+        
+        .low-resp {
+            border-left: none;
+        }
+        
+        .low-resp h3 {
+            color: #e74c3c;
+        }
+        
+        .no-comments {
+            padding: 4px 0;
+            color: #999;
+            font-style: italic;
+            font-size: 16px;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        li {
+            padding: 2px 0;
+            padding-left: 16px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.3;
+        }
+        
+        li:before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #999;
+            font-size: 16px;
+        }
+        
+        details {
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            padding: 0;
+            border-radius: 4px;
+        }
+        
+        summary {
+            cursor: pointer;
+            padding: 8px 12px;
+            background: #f8f8f8;
+            font-size: 15px;
+            font-weight: 500;
+            color: #555;
+            user-select: none;
+            transition: background 0.2s;
+            border-radius: 4px;
+        }
+        
+        summary:hover {
+            background: #e8e8e8;
+        }
+        
+        details[open] summary {
+            background: #e0e0e0;
+            border-bottom: 1px solid #ddd;
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .quotes-container {
+            padding: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .quote {
+            padding: 8px;
+            margin-bottom: 6px;
+            background: #f9f9f9;
+            border-left: 2px solid #999;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #555;
+            position: relative;
+            padding-right: 90px;
+        }
+        
+        .quote::after {
+            content: "AI-Generated";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 12px;
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .quote:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Responsive adjustments - only break to vertical at very narrow widths */
+        @media (max-width: 768px) {
+            .responsibility-split {
+                flex-direction: column;
+            }
+            
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            h2 {
+                font-size: 26px;
+            }
+            
+            h3 {
+                font-size: 18px;
+            }
+            
+            li {
+                font-size: 16px;
+            }
+            
+            .quote {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="exemplar-banner">
+        AI-GENERATED EXEMPLAR: All expert comments in this document are AI-generated examples for demonstration purposes only
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Required Assessments</div>
+                <div class="nav-item active" data-actor="gpai-developer">AI Developer (General-purpose AI)</div>
+                <div class="nav-item" data-actor="deployer">AI Deployer</div>
+                <div class="nav-item" data-actor="governance">AI Governance Actor</div>
+                <div class="nav-item" data-actor="user">AI User</div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title optional">Optional Assessments</div>
+                <div class="nav-item" data-actor="specialized-developer">AI Developer (Specialized AI)</div>
+                <div class="nav-item" data-actor="infrastructure">AI Infrastructure Provider</div>
+                <div class="nav-item" data-actor="stakeholder">Affected Stakeholder</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="actor-section active" id="gpai-developer">
+                <h2>AI Developer (General-purpose AI)</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <ul>
+                                <li>Toxic generation begins at the foundation model level</li>
+                                <li>Responsible for data quality and implementing guardrails</li>
+                                <li>Must ensure systems are designed with robustness against manipulation</li>
+                                <li>Control the design and management of core systems</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "As the architects of foundation models, general-purpose AI developers have the greatest control over the fundamental behaviors and biases embedded in these systems. The training data selection, algorithmic choices, and base safety measures all originate at this level, making them primarily accountable for toxic outputs."
+                                    </div>
+                                    <div class="quote">
+                                        "The responsibility fundamentally lies with those who curate the training datasets and design the core architecture. If toxic content emerges from a model, it's typically because harmful patterns existed in the training data or the safety mechanisms were inadequately designed from the outset."
+                                    </div>
+                                    <div class="quote">
+                                        "General-purpose developers must implement comprehensive filtering mechanisms and robust safety protocols at the foundation level. They have both the technical expertise and resources to prevent toxic generation before models are distributed downstream to deployers who may lack such capabilities."
+                                    </div>
+                                    <div class="quote">
+                                        "Given the cascading impact of foundation models across countless applications, developers at this level bear heightened responsibility. A single oversight in safety measures can propagate toxic behaviors across thousands of downstream implementations, affecting millions of users."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <ul>
+                                <li>Cannot simultaneously please all communities - toxicity norms vary by context</li>
+                                <li>Last-mile providers better positioned to ensure appropriate behavior for specific audiences</li>
+                                <li>Attempting universal content moderation would result in overly bland products</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "It's fundamentally unrealistic to expect general-purpose developers to anticipate and prevent all forms of toxicity across every possible cultural context and use case. What's considered offensive in one community might be acceptable discourse in another, making universal moderation an impossible standard."
+                                    </div>
+                                    <div class="quote">
+                                        "Foundation model developers should focus on preventing egregious harms while allowing downstream deployers to fine-tune content policies for their specific contexts. Over-sanitizing at the base level would cripple legitimate use cases in creative writing, academic research, and cultural expression."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="deployer">
+                <h2>AI Deployer</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <ul>
+                                <li>Primary responsibility for conducting due diligence when procuring or building around AI systems</li>
+                                <li>Responsible for moderation and contextual safeguards</li>
+                                <li>Must understand and manage risks under terms and conditions</li>
+                                <li>Often function as developers with wrappers around general-purpose AI</li>
+                                <li>Share responsibility for preventing accidental toxic content creation</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Deployers serve as the critical intermediary between foundation models and end users. They have both the opportunity and obligation to implement context-specific safety measures, content filters, and user protections that align with their particular use case and audience demographics."
+                                    </div>
+                                    <div class="quote">
+                                        "When deploying AI systems, organizations accept responsibility for understanding and mitigating risks. They cannot simply pass blame upstream to model developers when toxic content emerges - they chose to integrate these systems and must ensure appropriate safeguards are in place."
+                                    </div>
+                                    <div class="quote">
+                                        "Many deployers are sophisticated technology companies with significant resources and expertise. They often add minimal value beyond API wrappers yet profit substantially from AI services. With these benefits come responsibilities for ensuring safe deployment and protecting users from harmful content."
+                                    </div>
+                                    <div class="quote">
+                                        "Deployers have unique insight into their specific user base, use cases, and risk profiles. They're best positioned to implement targeted moderation strategies, establish appropriate content policies, and respond quickly to emerging patterns of toxic behavior in their particular context."
+                                    </div>
+                                    <div class="quote">
+                                        "The deployment layer is where abstract AI capabilities become concrete user experiences. Deployers must thoroughly test systems, implement monitoring, and maintain active moderation to prevent toxic content from reaching vulnerable populations."
+                                    </div>
+                                    <div class="quote">
+                                        "As the entities directly interfacing with users and collecting revenue from AI services, deployers cannot abdicate responsibility for content moderation. They must invest in safety infrastructure proportional to their scale and impact on users."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <p class="no-comments">No comments provided justifying lower responsibility ratings.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="governance">
+                <h2>AI Governance Actor</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <ul>
+                                <li>High responsibility for setting enforceable protections</li>
+                                <li>Should ensure systems meet safe and responsible design standards</li>
+                                <li>Have ability to influence and implement processes and policies</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Governance actors wield unique regulatory and policy-making power to establish industry-wide standards for preventing toxic content. They can create binding requirements, enforcement mechanisms, and accountability structures that individual companies cannot implement unilaterally."
+                                    </div>
+                                    <div class="quote">
+                                        "Through legislation, standards bodies, and regulatory frameworks, governance actors must establish clear baselines for acceptable AI behavior. They have responsibility to protect citizens from harmful content while balancing innovation and freedom of expression."
+                                    </div>
+                                    <div class="quote">
+                                        "Governance actors should mandate transparency requirements, audit procedures, and reporting mechanisms that allow for systematic identification and mitigation of toxic content risks across the AI ecosystem. Their oversight role is essential for maintaining public trust."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <ul>
+                                <li>Should not have primary responsibility compared to developers/deployers</li>
+                                <li>Must avoid being overly prescriptive given legitimate uses of toxic content</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Governance actors operate at too high a level of abstraction to effectively address the technical nuances of toxic content generation. Primary responsibility must rest with those who actually build and deploy the systems, as they have direct control over implementation details."
+                                    </div>
+                                    <div class="quote">
+                                        "Regulatory approaches risk being either too broad (stifling innovation) or too narrow (missing emerging threats). The rapid pace of AI development means governance frameworks will always lag behind technical realities, making developer and deployer responsibility more crucial."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="user">
+                <h2>AI User</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <ul>
+                                <li>Can report issues when encountered</li>
+                                <li>Required to conduct due diligence with terms and conditions</li>
+                                <li>Responsible for intentional creation of toxic content</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Users have a civic responsibility to report harmful content when encountered, contributing to the collective effort to improve AI safety. Their feedback provides crucial data for identifying patterns and improving content moderation systems."
+                                    </div>
+                                    <div class="quote">
+                                        "When users deliberately attempt to generate toxic content through prompt engineering or system manipulation, they bear direct responsibility for the resulting harms. The intentionality of their actions cannot be overlooked in the responsibility framework."
+                                    </div>
+                                    <div class="quote">
+                                        "By accepting terms of service and continuing to use AI systems, users acknowledge certain risks and agree to use systems responsibly. They have some obligation to educate themselves about safe usage practices and potential harms."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <ul>
+                                <li>Victims of exposure to toxic content</li>
+                                <li>Bear the harm but should not carry responsibility</li>
+                                <li>No proactive obligation to prevent systemic toxic content exposure</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Users are fundamentally consumers of AI services who should be able to trust that systems have been properly designed and deployed with adequate safety measures. Placing responsibility on them victim-blames and deflects from institutional failures."
+                                    </div>
+                                    <div class="quote">
+                                        "The average user lacks the technical knowledge, resources, or power to meaningfully influence how AI systems generate or filter content. They're often exposed to toxic content inadvertently while pursuing legitimate tasks, making them victims rather than responsible parties."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="specialized-developer">
+                <h2>AI Developer (Specialized AI)</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <ul>
+                                <li>Highly responsible for moderation and contextual safeguards</li>
+                                <li>Must ensure robust system design against manipulation</li>
+                                <li>Share responsibility for preventing toxic content generation</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Specialized AI developers create purpose-built systems for specific domains where they have deep expertise. This positions them to anticipate and prevent domain-specific forms of toxicity that general-purpose developers might miss."
+                                    </div>
+                                    <div class="quote">
+                                        "When developing AI for specialized applications, these developers must implement targeted safety measures appropriate to their use case. They cannot rely solely on upstream safety features but must add domain-specific protections against toxic content."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <p class="no-comments">No comments provided justifying lower responsibility ratings.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="infrastructure">
+                <h2>AI Infrastructure Provider</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <p class="no-comments">No comments provided justifying higher responsibility ratings.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <ul>
+                                <li>Don't control content generation or moderation</li>
+                                <li>Minimal responsibility in toxic content exposure</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Infrastructure providers operate at the computational layer, providing hardware and cloud services without direct involvement in model training or content generation. Holding them responsible for toxic content would be like blaming electricity providers for offensive television programs."
+                                    </div>
+                                    <div class="quote">
+                                        "These actors provide general-purpose computing resources that could be used for any application. They have neither the capability nor the mandate to monitor or moderate the content processed through their infrastructure."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actor-section" id="stakeholder">
+                <h2>Affected Stakeholder</h2>
+                
+                <div class="responsibility-split">
+                    <div class="responsibility-column">
+                        <div class="responsibility-category high-resp">
+                            <h3>Higher Responsibility Arguments</h3>
+                            <p class="no-comments">No comments provided justifying higher responsibility ratings.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="responsibility-column">
+                        <div class="responsibility-category low-resp">
+                            <h3>Lower Responsibility Arguments</h3>
+                            <ul>
+                                <li>Victims of exposure to toxic content</li>
+                                <li>Bear the harm but should not carry responsibility</li>
+                                <li>No proactive obligation to prevent systemic toxic content exposure</li>
+                            </ul>
+                            <details>
+                                <summary>View Supporting Expert Comments</summary>
+                                <div class="quotes-container">
+                                    <div class="quote">
+                                        "Affected stakeholders often have no direct interaction with AI systems yet suffer consequences from toxic content generated about them or their communities. They're collateral damage in the AI ecosystem and cannot reasonably be held responsible for preventing harms they didn't create."
+                                    </div>
+                                    <div class="quote">
+                                        "These individuals and groups bear the psychological, social, and sometimes economic costs of toxic AI-generated content without having chosen to engage with these systems. Assigning them responsibility would compound the injustice they already face."
+                                    </div>
+                                    <div class="quote">
+                                        "Stakeholders affected by toxic content are often marginalized communities who lack the power, resources, or platforms to influence AI development or deployment. They shouldn't be burdened with responsibility for systemic failures they had no part in creating."
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.actor-section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all nav items and sections
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const actorId = this.getAttribute('data-actor');
+                    const targetSection = document.getElementById(actorId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
