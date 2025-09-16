@@ -117,7 +117,7 @@
     // Keep track of last set height and prevent rapid updates
     let lastSetHeight = 0;
     let lastUpdateTime = 0;
-    const UPDATE_THROTTLE = 500; // Minimum time between updates in ms
+    const UPDATE_THROTTLE = 200; // Minimum time between updates in ms
 
     // Listen for height messages from iframe
     window.addEventListener('message', function(e) {
@@ -141,8 +141,8 @@
             if (iframe) {
                 const newHeight = e.data.height;
 
-                // Only update if height changed significantly (more than 20px)
-                if (Math.abs(newHeight - lastSetHeight) > 20) {
+                // Only update if height changed significantly (more than 10px)
+                if (Math.abs(newHeight - lastSetHeight) > 10) {
                     const scaleFactor = window.innerWidth <= 768 ? 0.75 : 0.95;
                     const adjustedHeight = Math.ceil(newHeight / scaleFactor);
 

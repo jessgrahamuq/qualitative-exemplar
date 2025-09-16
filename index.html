@@ -643,14 +643,18 @@
             // Debounce height updates
             heightUpdateTimeout = setTimeout(() => {
                 if (window.parent && window.parent !== window) {
+                    // Force a layout recalculation to get accurate height
+                    document.body.offsetHeight;
+
                     // Use a simple, reliable height calculation
                     const height = Math.max(
                         document.body.scrollHeight,
-                        document.documentElement.scrollHeight
+                        document.documentElement.scrollHeight,
+                        document.body.offsetHeight
                     );
 
-                    // Only send if height changed by more than 5px to prevent micro-adjustments
-                    if (Math.abs(height - lastCalculatedHeight) > 5) {
+                    // Only send if height changed by more than 2px to prevent micro-adjustments
+                    if (Math.abs(height - lastCalculatedHeight) > 2) {
                         lastCalculatedHeight = height;
                         window.parent.postMessage({
                             type: 'iframe-height',
@@ -659,7 +663,7 @@
                         }, '*');
                     }
                 }
-            }, 100); // 100ms debounce
+            }, 50); // 50ms debounce
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -686,16 +690,22 @@
                         targetSection.classList.add('active');
                     }
 
-                    // Update iframe height after content change - longer delay for animations
-                    setTimeout(updateIframeHeight, 300);
+                    // Update iframe height after content change - shorter delay for better responsiveness
+                    setTimeout(updateIframeHeight, 150);
                 });
             });
 
             // Listen for details/summary expansions
             detailsElements.forEach(details => {
                 details.addEventListener('toggle', function() {
-                    // Longer delay to allow content to expand/collapse fully
-                    setTimeout(updateIframeHeight, 300);
+                    // Different delays for opening vs closing
+                    if (this.open) {
+                        // Opening - wait for content to expand
+                        setTimeout(updateIframeHeight, 150);
+                    } else {
+                        // Closing - wait for content to fully collapse
+                        setTimeout(updateIframeHeight, 200);
+                    }
                 });
             });
 
